@@ -21,6 +21,13 @@ create buffer 8 chars allot
 : prepare-input   refill drop ;
 : word   bl word count ;
 
+( create input   8 chars allot
+variable #input
+variable >in
+
+: accept   input 8 accept #input ! ;
+: word   in )
+
 : prompt   playing emit ." 's turn. enter the column and row numbers " ;
 
 : number   0 0 word >number nip nip 0= ;
