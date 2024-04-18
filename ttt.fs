@@ -8,7 +8,7 @@ char O constant o
 defer playing
 variable state
 
-: clear   board 9 chars bl fill ;
+: clear   board 9 bl fill ;
 
 : tile   chars board + ;
 : tile@   tile c@ ;
@@ -18,20 +18,31 @@ create buffer 8 chars allot
 
 : "retry"   ." try again " ;
 
-: prepare-input   refill drop ;
-: word   bl word count ;
-
-( create input   8 chars allot
+create input   8 chars allot
 variable #input
-variable >in
+variable >input
 
-: accept   input 8 accept #input ! ;
-: word   in )
+: accept   input 8 accept #input ! 0 >input ! ;
+: nextc   >input @ dup 1+ >input ! chars input + c@ ;
+: backc   >input @ if -1 >input +! then ;
+: end?   >input @ #input @ = ;
+: deblank
+ begin end? 0= while
+  nextc bl <> if backc exit then
+ repeat ;
+: >blank
+ begin end? 0= while
+  nextc bl .s cr = if backc exit then
+ repeat ;
+: word
+ deblank >input @ >r >blank >input @
+ r@ -
+ r> chars input + swap ;
 
 : prompt   playing emit ." 's turn. enter the column and row numbers " ;
 
 : number   0 0 word >number nip nip 0= ;
-: 2numbers   prepare-input number number rot and ;
+: 2numbers   accept number number rot and ;
 
 : input-xy ( -- x y )
  begin 2numbers 0= while 2drop "retry" repeat
@@ -58,7 +69,7 @@ variable >in
   [ char A char a - ] literal + then ;
 
 : character
- begin prepare-input word 1 <> while drop "retry" repeat
+ begin accept word 1 <> while drop "retry" repeat
  c@ uppercase ;
 
 : choose-turn
@@ -103,10 +114,7 @@ variable >in
  diag1? if win then
  diag2? if win then ;
 
-: over?
- full? ?dup if exit then
- ?rows ?cols ?diags
- false ;
+: over? ?rows ?cols ?diags full? ;
 
 : pipe   ."  | " ;
 : sym   dup c@ emit char+ ;
