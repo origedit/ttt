@@ -139,5 +139,4 @@ variable >input
  choose-turn
  play
  draw
- state @ if "win" else "tie" then
- ." type GAME to play again, or BYE to quit." cr ;
+ state @ if "win" else "tie" then ;

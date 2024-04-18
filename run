@@ -1,3 +1,2 @@
 #!/bin/sh
-gforth -e "include ttt.fs game"
-# run "game" withn the Forth interpreter.
+gforth ttt.fs -e "game bye"
